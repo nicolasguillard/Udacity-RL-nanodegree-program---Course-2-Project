@@ -1,25 +1,21 @@
-import numpy as np
 import random
-from collections import namedtuple, deque
 
-from models.linear_v1 import QNetwork
-
+import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-from dqn_extensions.ext_replay import ReplayBuffer
+from models.linear_v1 import QNetworkLinear as QNetwork
+from dqn_extensions.ext__exp_replay import ReplayBuffer
 
-DEFAULT_BUFFER_SIZE = int(1e5)  # replay buffer size
-DEFAULT_BATCH_SIZE = 64         # minibatch size
-DEFAULT_GAMMA = 0.99            # discount factor
-DEFAULT_TAU = 1e-3              # for soft update of target parameters
-DEFAULT_LR = 5e-4               # learning rate 
-DEFAULT_UPDATE_EVERY = 4        # how often to update the network
+DEFAULT_BUFFER_SIZE = int(1e5)      # replay buffer size
+DEFAULT_BATCH_SIZE = 64             # minibatch size
+DEFAULT_GAMMA = 0.99                # discount factor
+DEFAULT_TAU = 1e-3                  # for soft update of target parameters
+DEFAULT_LEARNING_RATE = 5e-4        # learning rate 
+DEFAULT_UPDATE_EVERY_N_STEPS = 4    # how often to update the network
 
-class DQNAgentReplay():
-    """Interacts with and learns from the environment."""
-
+class DQNAgentExpReplay():
     def __init__(
             self,
             state_size: int,
@@ -30,9 +26,8 @@ class DQNAgentReplay():
             batch_size: int = DEFAULT_BATCH_SIZE,
             gamma: float = DEFAULT_GAMMA,
             tau:float = DEFAULT_TAU,
-            lr:float = DEFAULT_LR,
-            update_every:int = DEFAULT_UPDATE_EVERY,
-            seed: int = None
+            lr:float = DEFAULT_LEARNING_RATE,
+            update_every_n_steps:int = DEFAULT_UPDATE_EVERY_N_STEPS
             ) -> None:
         """Initialize an Agent object.
         
@@ -51,17 +46,24 @@ class DQNAgentReplay():
         self.gamma = gamma
         self.tau = tau
         self.lr = lr
-        self.update_every = update_every
+        self.update_every_n_steps = update_every_n_steps
 
         # Q-Network
-        self.qnetwork_local = QNetwork(state_size, action_size, seed, **model_parameters).to(device)
-        self.qnetwork_target = QNetwork(state_size, action_size, seed, **model_parameters).to(device)
-        self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=DEFAULT_LR)
+        self.qnetwork_local = QNetwork(
+            state_size, action_size, **model_parameters
+            ).to(device)
+        self.qnetwork_target = QNetwork(
+            state_size, action_size, **model_parameters
+            ).to(device)
+        self.optimizer = optim.Adam(
+            self.qnetwork_local.parameters(), lr=DEFAULT_LEARNING_RATE
+            )
 
         # Replay memory
-        self.memory = ReplayBuffer(action_size, buffer_size, batch_size, device, seed)
+        self.memory = ReplayBuffer(action_size, buffer_size, batch_size, device)
         # Initialize time step (for updating every UPDATE_EVERY steps)
         self.t_step = 0
+        self.train_mode = True
     
 
     def step(self, state, action, reward, next_state, done):
@@ -69,7 +71,7 @@ class DQNAgentReplay():
         self.memory.add(state, action, reward, next_state, done)
         
         # Learn every UPDATE_EVERY time steps.
-        self.t_step = (self.t_step + 1) % self.update_every
+        self.t_step = (self.t_step + 1) % self.update_every_n_steps
         if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
             if len(self.memory) > self.batch_size:
@@ -77,7 +79,7 @@ class DQNAgentReplay():
                 self.learn(experiences, DEFAULT_GAMMA)
 
 
-    def act(self, state, eps=0., train_mode=True):
+    def act(self, state, eps=0., train_mode=False):
         """Returns actions for given state as per current policy.
         
         Params
@@ -87,7 +89,7 @@ class DQNAgentReplay():
         """
         state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
         
-        if train_mode: 
+        if self.train_mode or train_mode: 
             self.qnetwork_local.eval()
             with torch.no_grad():
                 action_values = self.qnetwork_local(state)
@@ -146,3 +148,26 @@ class DQNAgentReplay():
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+
+    def save(self, filename):
+        """Save the model parameters to file."""
+        torch.save(self.qnetwork_local.state_dict(), filename)
+    
+    def load(self, filename):
+        """Load the model parameters from file."""
+        self.qnetwork_local.load_state_dict(torch.load(filename, weights_only=True))
+        self.qnetwork_target.load_state_dict(torch.load(filename, weights_only=True))
+        self.qnetwork_local.to(self.device)
+        self.qnetwork_target.to(self.device)
+
+    def train(self):
+        """Set the model to training mode."""
+        self.qnetwork_local.train()
+        self.qnetwork_target.train()    
+        self.train_mode = True
+    
+    def eval(self):
+        """Set the model to evaluation mode."""
+        self.qnetwork_local.eval()
+        self.qnetwork_target.eval()
+        self.train_mode = False

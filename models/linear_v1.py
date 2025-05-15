@@ -2,10 +2,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class QNetwork(nn.Module):
+class QNetworkLinear(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed: int = None, fc1_units=64, fc2_units=64):
+    def __init__(
+            self,
+            state_size: int,
+            action_size: int,
+            fc1_units: int = 64,
+            fc2_units: int = 64
+            ) -> None:
         """Initialize parameters and build model.
         Params
         ======
@@ -13,16 +19,13 @@ class QNetwork(nn.Module):
             action_size (int): Dimension of each action
             seed (int): Random seed
         """
-        super(QNetwork, self).__init__()
-        if seed is not None:
-            self.seed = torch.manual_seed(seed)
+        super().__init__()
 
         self.fc1 = nn.Linear(state_size, fc1_units)
         self.fc2 = nn.Linear(fc1_units, fc2_units)
         self.fc3 = nn.Linear(fc2_units, action_size)
         
-
-    def forward(self, state):
+    def forward(self, state: torch.Tensor) -> torch.Tensor:
         """Build a network that maps state -> action values."""
         h = F.relu(self.fc1(state))
         h = F.relu(self.fc2(h))
