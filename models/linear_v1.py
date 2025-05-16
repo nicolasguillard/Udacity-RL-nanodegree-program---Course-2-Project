@@ -1,3 +1,8 @@
+# Source code for the DQN agent with experience replay and fixed Q-targets
+# This code is ispired from the Udacity Deep Reinforcement Learning Nanodegree program codes.
+# The code is provided for educational purposes and is not intended for production use.
+# Source : Udacity Deep Reinforcement Learning Nanodegree - Course "Value-based method" Material - Exercice 2.7
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

@@ -1,3 +1,6 @@
+# Source code for the DQN agent with experience replay and fixed Q-targets
+# This code is ispired from the Udacity Deep Reinforcement Learning Nanodegree program codes.
+# The code is provided for educational purposes and is not intended for production use.
 # Source : Udacity Deep Reinforcement Learning Nanodegree - Course "Value-based method" Material - Exercice 2.7
 
 from collections import namedtuple, deque
@@ -8,11 +11,16 @@ import torch
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
 
-    def __init__(self, action_size, buffer_size, batch_size, device):
+    def __init__(
+            self,
+            action_size: int,
+            buffer_size: int,
+            batch_size: int,
+            device: str|torch.device
+            ) -> None:
         """Initialize a ReplayBuffer object.
 
-        Params
-        ======
+        Args :
             action_size (int): dimension of each action
             buffer_size (int): maximum size of buffer
             batch_size (int): size of each training batch
@@ -24,12 +32,27 @@ class ReplayBuffer:
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
         self.device = device
     
-    def add(self, state, action, reward, next_state, done):
-        """Add a new experience to memory."""
+    def add(self,
+            state: list[float],
+            action: int,
+            reward: int,
+            next_state: list[float],
+            done: bool
+            ) -> None:
+        """
+        Add a new experience to memory.
+        
+        Args :
+            state (list[float]): current state
+            action (int): action taken
+            reward (int): reward received
+            next_state (list[float]): next state
+            done (bool): whether the episode has ended  
+        """
         e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
     
-    def sample(self):
+    def sample(self) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
         
@@ -54,6 +77,6 @@ class ReplayBuffer:
   
         return (states, actions, rewards, next_states, dones)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the current size of internal memory."""
         return len(self.memory)

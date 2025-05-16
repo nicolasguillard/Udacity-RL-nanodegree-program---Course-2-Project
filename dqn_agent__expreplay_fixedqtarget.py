@@ -1,4 +1,10 @@
+# Source code for the DQN agent with experience replay and fixed Q-targets
+# This code is ispired from the Udacity Deep Reinforcement Learning Nanodegree program codes.
+# The code is provided for educational purposes and is not intended for production use.
+# Source : Udacity Deep Reinforcement Learning Nanodegree - Course "Value-based method" Material - Exercice 2.7
+
 import random
+from typing import Tuple
 
 import numpy as np
 import torch
@@ -15,7 +21,7 @@ DEFAULT_TAU = 1e-3                  # for soft update of target parameters
 DEFAULT_LEARNING_RATE = 5e-4        # learning rate 
 DEFAULT_UPDATE_EVERY_N_STEPS = 4    # how often to update the network
 
-class DQNAgentExpReplay():
+class DQNAgentExpReplayFixedQTarget():
     def __init__(
             self,
             state_size: int,
@@ -31,11 +37,17 @@ class DQNAgentExpReplay():
             ) -> None:
         """Initialize an Agent object.
         
-        Params
-        ======
+        Args:
             state_size (int): dimension of each state
             action_size (int): dimension of each action
-            seed (int): random seed
+            model_parameters (dict): parameters for the QNetwork model
+            device (str): device to use for training ('cpu' or 'cuda')
+            buffer_size (int): replay buffer size
+            batch_size (int): minibatch size
+            gamma (float): discount factor
+            tau (float): for soft update of target parameters
+            lr (float): learning rate 
+            update_every_n_steps (int): how often to update the network
         """
         self.state_size = state_size
         self.action_size = action_size
@@ -65,9 +77,23 @@ class DQNAgentExpReplay():
         self.t_step = 0
         self.train_mode = True
     
-
-    def step(self, state, action, reward, next_state, done):
-        # Save experience in replay memory
+    def step(
+            self,
+            state: list[float],
+            action: int,
+            reward: int,
+            next_state: list[float],
+            done: bool
+            ) :
+        """Save experience in replay memory, and use random sample from buffer to learn.
+        
+        Args:
+            state (list[float]): current state
+            action (int): action taken
+            reward (int): reward received
+            next_state (list[float]): next state
+            done (bool): whether the episode has ended
+        """
         self.memory.add(state, action, reward, next_state, done)
         
         # Learn every UPDATE_EVERY time steps.
@@ -78,14 +104,18 @@ class DQNAgentExpReplay():
                 experiences = self.memory.sample()
                 self.learn(experiences, DEFAULT_GAMMA)
 
-
-    def act(self, state, eps=0., train_mode=False):
+    def act(
+            self,
+            state: list[float],
+            eps: float = 0.,
+            train_mode: bool = False
+            ):
         """Returns actions for given state as per current policy.
-        
-        Params
-        ======
-            state (array_like): current state
+
+        Args:
+            state (list[float]): current state
             eps (float): epsilon, for epsilon-greedy action selection
+            train_mode (bool): whether the agent is in training mode or not
         """
         state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
         
@@ -105,12 +135,10 @@ class DQNAgentExpReplay():
                 action_values = self.qnetwork_local(state)
             return np.argmax(action_values.cpu().data.numpy())
 
-
-    def learn(self, experiences, gamma):
+    def learn(self, experiences: Tuple[torch.Tensor], gamma: float):
         """Update value parameters using given batch of experience tuples.
 
-        Params
-        ======
+        Args:
             experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
             gamma (float): discount factor
         """
@@ -135,26 +163,32 @@ class DQNAgentExpReplay():
         # ------------------- update target network ------------------- #
         self.soft_update(self.qnetwork_local, self.qnetwork_target, DEFAULT_TAU)                     
 
-
-    def soft_update(self, local_model, target_model, tau):
-        """Soft update model parameters.
+    def soft_update(self, local_model: QNetwork, target_model: QNetwork, tau: float):
+        """Soft update target model parameters.
         θ_target = τ*θ_local + (1 - τ)*θ_target
 
-        Params
-        ======
+        Args
             local_model (PyTorch model): weights will be copied from
             target_model (PyTorch model): weights will be copied to
             tau (float): interpolation parameter 
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
-            target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+            target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
 
-    def save(self, filename):
-        """Save the model parameters to file."""
+    def save(self, filename: str):
+        """Save the model parameters to file.
+        
+        Args:
+            filename (str): name of the file to save the model parameters
+        """
         torch.save(self.qnetwork_local.state_dict(), filename)
     
-    def load(self, filename):
-        """Load the model parameters from file."""
+    def load(self, filename: str):
+        """Load the model parameters from file.
+        
+        Args:
+            filename (str): name of the file to load the model parameters from
+        """
         self.qnetwork_local.load_state_dict(torch.load(filename, weights_only=True))
         self.qnetwork_target.load_state_dict(torch.load(filename, weights_only=True))
         self.qnetwork_local.to(self.device)

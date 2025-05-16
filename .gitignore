@@ -1,2 +1,8 @@
 VisualBanana.app/
 Banana.app/
+_playground/
+*.DS_Store
+__pycache__/
+.ipynb_checkpoints
+unity-en
+unity-environment.log
