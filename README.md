@@ -44,7 +44,8 @@ The task is episodic, and in order to solve the environment, your agent must get
 9. `pip install tqdm` also.
 10. `python -m ipykernel install --user --name banana --display-name "banana"`
 11. In order to install `PyTorch`, choose the right parameters in the [PyTorch installation page](https://pytorch.org/get-started/locally/), (here macos is the selected platform (*see figure above*)), and copy/paste/execute the suggested command, like `pip install torch torchvision torchaudio`.
-![[Udacity Course 2 Project - Source/_attachments/screenshot_1440.png]]
+![pytorch_install_command_form](https://github.com/user-attachments/assets/f293a11e-927e-49fd-85fb-20757517b2e2)
+
 
 ### 2. Install this project
 1. Go to a directory into which you want to isntall the project.
@@ -85,6 +86,11 @@ Of course, a local Jupyter instance must be launched.
 
 To verify the installation of the python runtime environment and access to the Unity “Banana” environment application, follow the instructions in `Navigation.ipynb`.
 
-To run the agent training and validation project, follow the instructions in `Training DQN Agent.ipynb`. A video of the agent's interaction with the environment is available on [YouTube](https://youtu.be/G3rj4Yoc8bQ).
+To run the agent training and validation project, follow the instructions in `Training DQN Agent.ipynb`. 
+![model_weights_275_solved training stats](https://github.com/user-attachments/assets/57ba75f9-1c10-493a-a959-3ce8f7d00918)
+
+A video of the agent's interaction with the environment is available on [YouTube](https://youtu.be/G3rj4Yoc8bQ).
+
+![youtube video](https://github.com/user-attachments/assets/4b68a143-6d36-4158-a411-ed82353c15be)
 
 > Hint : if you interrupt the run of a notebook running the Unity environment, you should restart the notebook kernel in order to set the Unity environment back to its initial starting state. If not, the Unity core or the communication stream between the notebook and the environment could be frozen.
