@@ -4,7 +4,7 @@
 # Source : Udacity Deep Reinforcement Learning Nanodegree - Course "Value-based method" Material - Exercice 2.7
 
 import random
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
 import torch
@@ -31,9 +31,9 @@ class DQNAgentExpReplayFixedQTarget():
             buffer_size: int = DEFAULT_BUFFER_SIZE,
             batch_size: int = DEFAULT_BATCH_SIZE,
             gamma: float = DEFAULT_GAMMA,
-            tau:float = DEFAULT_TAU,
-            lr:float = DEFAULT_LEARNING_RATE,
-            update_every_n_steps:int = DEFAULT_UPDATE_EVERY_N_STEPS
+            tau: float = DEFAULT_TAU,
+            lr: float = DEFAULT_LEARNING_RATE,
+            update_every_n_steps: int = DEFAULT_UPDATE_EVERY_N_STEPS
             ) -> None:
         """Initialize an Agent object.
         
@@ -79,19 +79,19 @@ class DQNAgentExpReplayFixedQTarget():
     
     def step(
             self,
-            state: list[float],
+            state: List[float],
             action: int,
             reward: int,
-            next_state: list[float],
+            next_state: List[float],
             done: bool
-            ) :
+            ) -> None:
         """Save experience in replay memory, and use random sample from buffer to learn.
         
         Args:
-            state (list[float]): current state
+            state (List[float]): current state
             action (int): action taken
             reward (int): reward received
-            next_state (list[float]): next state
+            next_state (List[float]): next state
             done (bool): whether the episode has ended
         """
         self.memory.add(state, action, reward, next_state, done)
@@ -106,14 +106,14 @@ class DQNAgentExpReplayFixedQTarget():
 
     def act(
             self,
-            state: list[float],
+            state: List[float],
             eps: float = 0.,
             train_mode: bool = False
-            ):
+            ) -> int:
         """Returns actions for given state as per current policy.
 
         Args:
-            state (list[float]): current state
+            state (List[float]): current state
             eps (float): epsilon, for epsilon-greedy action selection
             train_mode (bool): whether the agent is in training mode or not
         """
@@ -135,7 +135,7 @@ class DQNAgentExpReplayFixedQTarget():
                 action_values = self.qnetwork_local(state)
             return np.argmax(action_values.cpu().data.numpy())
 
-    def learn(self, experiences: Tuple[torch.Tensor], gamma: float):
+    def learn(self, experiences: Tuple[torch.Tensor], gamma: float) -> None:
         """Update value parameters using given batch of experience tuples.
 
         Args:
@@ -163,7 +163,12 @@ class DQNAgentExpReplayFixedQTarget():
         # ------------------- update target network ------------------- #
         self.soft_update(self.qnetwork_local, self.qnetwork_target, DEFAULT_TAU)                     
 
-    def soft_update(self, local_model: QNetwork, target_model: QNetwork, tau: float):
+    def soft_update(
+            self,
+            local_model: QNetwork,
+            target_model: QNetwork,
+            tau: float
+            ) -> None:
         """Soft update target model parameters.
         θ_target = τ*θ_local + (1 - τ)*θ_target
 
@@ -175,7 +180,7 @@ class DQNAgentExpReplayFixedQTarget():
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau * local_param.data + (1.0 - tau) * target_param.data)
 
-    def save(self, filename: str):
+    def save(self, filename: str) -> None:
         """Save the model parameters to file.
         
         Args:
@@ -183,7 +188,7 @@ class DQNAgentExpReplayFixedQTarget():
         """
         torch.save(self.qnetwork_local.state_dict(), filename)
     
-    def load(self, filename: str):
+    def load(self, filename: str) -> None:
         """Load the model parameters from file.
         
         Args:
@@ -194,13 +199,13 @@ class DQNAgentExpReplayFixedQTarget():
         self.qnetwork_local.to(self.device)
         self.qnetwork_target.to(self.device)
 
-    def train(self):
+    def train(self) -> None:
         """Set the model to training mode."""
         self.qnetwork_local.train()
         self.qnetwork_target.train()    
         self.train_mode = True
     
-    def eval(self):
+    def eval(self) -> None:
         """Set the model to evaluation mode."""
         self.qnetwork_local.eval()
         self.qnetwork_target.eval()

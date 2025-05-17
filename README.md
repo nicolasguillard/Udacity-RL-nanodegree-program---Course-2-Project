@@ -25,7 +25,7 @@ The task is episodic, and in order to solve the environment, your agent must get
 
 ## Run this project
 
-### 1. installation of the python runtime environment
+### 1. Installation of the python runtime environment
 **As of the date of availability** of this project version in Github, these instructions take up those available in the Udacity nanoprogram student knowledge base, in addition to [those provided](https://github.com/udacity/Value-based-methods) in the project description (and which present anomalies depending on the student's platform) :
 
 **INSTALLATION INSTRUCTIONS FOR WINDOWS/LINUX/MACOS**
@@ -44,7 +44,7 @@ The task is episodic, and in order to solve the environment, your agent must get
 9. `pip install tqdm` also.
 10. `python -m ipykernel install --user --name banana --display-name "banana"`
 11. In order to install `PyTorch`, choose the right parameters in the [PyTorch installation page](https://pytorch.org/get-started/locally/), (here macos is the selected platform (*see figure above*)), and copy/paste/execute the suggested command, like `pip install torch torchvision torchaudio`.
-![[screenshot_1440.png]]
+![[Udacity Course 2 Project - Source/_attachments/screenshot_1440.png]]
 
 ### 2. Install this project
 1. Go to a directory into which you want to isntall the project.
@@ -53,11 +53,15 @@ The task is episodic, and in order to solve the environment, your agent must get
 #### File structure of this project
 - `dqn_extensions/`: directory containing extension codes for the DQN algorithm.
 	- `ext__exp_replay.py` : code of Experience Replay extension.
+- `images/`: directory containing the figures included in the notebook.
+- `models/`: directory containing the neural network models.
+    - `linear_v1.py` : code of the neural network model.
 - `dqn_agent__expreplay_fixedqtarget.py`: code for the agent based on the DQN algorithm with Experience Replay and Fixed Q-Target.
 - `model_weights_f275_solved.pth`: weights of the agent model trained via the `Training DQN Agent.ipynb` notebook. 
-- `Navigation.ipynb` : notebook used to test access to the Unity Banana environment [[#3. Installation of the Unity “Banana” environment]] .
+- `Navigation.ipynb` : notebook used to test access to the Unity Banana environment.
 - `README.md` : this file.
-- Report.ipynb`: project report including implementation description.
+- `Report.ipynb (fr)`: project report including implementation description, in French.
+- `Report.ipynb`: project report including implementation description.
 - `Training DQN Agent (fr).ipynb`: training and evaluation execution log, with explanations in French.
 - `Training DQN Agent.ipynb`: training and evaluation logbook, with explanations in English.
 
@@ -81,6 +85,6 @@ Of course, a local Jupyter instance must be launched.
 
 To verify the installation of the python runtime environment and access to the Unity “Banana” environment application, follow the instructions in `Navigation.ipynb`.
 
-To run the agent training and validation project, follow the instructions in `Training DQN Agent.ipynb`.
+To run the agent training and validation project, follow the instructions in `Training DQN Agent.ipynb`. A video of the agent's interaction with the environment is available on [YouTube](https://youtu.be/G3rj4Yoc8bQ).
 
-
+> Hint : if you interrupt the run of a notebook running the Unity environment, you should restart the notebook kernel in order to set the Unity environment back to its initial starting state. If not, the Unity core or the communication stream between the notebook and the environment could be frozen.

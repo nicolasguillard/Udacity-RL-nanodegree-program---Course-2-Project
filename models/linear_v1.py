@@ -8,8 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class QNetworkLinear(nn.Module):
-    """Actor (Policy) Model."""
-
+    """Agent Neural Network Model."""
     def __init__(
             self,
             state_size: int,
@@ -18,22 +17,30 @@ class QNetworkLinear(nn.Module):
             fc2_units: int = 64
             ) -> None:
         """Initialize parameters and build model.
-        Params
-        ======
+        
+        Args:
             state_size (int): Dimension of each state
             action_size (int): Dimension of each action
-            seed (int): Random seed
+            fc1_units (int): Number of nodes in the first hidden layer
+            fc2_units (int): Number of nodes in the second hidden layer
         """
         super().__init__()
 
         self.fc1 = nn.Linear(state_size, fc1_units)
+        self.relu1 = nn.ReLU()
         self.fc2 = nn.Linear(fc1_units, fc2_units)
+        self.relu2 = nn.ReLU()
         self.fc3 = nn.Linear(fc2_units, action_size)
         
     def forward(self, state: torch.Tensor) -> torch.Tensor:
-        """Build a network that maps state -> action values."""
-        h = F.relu(self.fc1(state))
-        h = F.relu(self.fc2(h))
+        """Build a network that maps state -> action values.
+        Args:
+            state (torch.Tensor): State input to the network
+        Returns:
+            torch.Tensor: Action values for the given state
+        """
+        h = self.relu1(self.fc1(state))
+        h = self.relu2(self.fc2(h))
         action = self.fc3(h)
         return action
         

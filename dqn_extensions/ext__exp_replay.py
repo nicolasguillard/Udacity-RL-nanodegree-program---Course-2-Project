@@ -3,6 +3,7 @@
 # The code is provided for educational purposes and is not intended for production use.
 # Source : Udacity Deep Reinforcement Learning Nanodegree - Course "Value-based method" Material - Exercice 2.7
 
+from typing import List, Tuple
 from collections import namedtuple, deque
 import random
 import numpy as np
@@ -16,7 +17,7 @@ class ReplayBuffer:
             action_size: int,
             buffer_size: int,
             batch_size: int,
-            device: str|torch.device
+            device: str
             ) -> None:
         """Initialize a ReplayBuffer object.
 
@@ -33,26 +34,26 @@ class ReplayBuffer:
         self.device = device
     
     def add(self,
-            state: list[float],
+            state: List[float],
             action: int,
             reward: int,
-            next_state: list[float],
+            next_state: List[float],
             done: bool
             ) -> None:
         """
         Add a new experience to memory.
         
         Args :
-            state (list[float]): current state
+            state (List[float]): current state
             action (int): action taken
             reward (int): reward received
-            next_state (list[float]): next state
+            next_state (List[float]): next state
             done (bool): whether the episode has ended  
         """
         e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
     
-    def sample(self) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def sample(self) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
         
