@@ -1,17 +1,11 @@
-[//]: # (Image References)
-
-
-
-# Udacity Reinforcement Learning Nanodegree - Course "Value-Based Methods" Project : Navigation
-
 # Udacity Reinforcement Learning Nanodegree - Course “Value-Based Methods” Project : Navigation
 
 ## Presentation
 This project is the validation test for course 2 **Value-Based Methods** of Udacity's [Deep Reinforcement Learning - Nanodegree Program](https://www.udacity.com/course/deep-reinforcement-learning-nanodegree--nd893).
 
-It involves training an agent with a value-based method to solve the Unity [[#Unity “Banana”]] environment.
+It involves training an agent with a value-based method to solve the [Unity environment](#3-install-unity-environment-banana).
 
-This project requires a special python development environment, the instructions for which are provided below.
+This project requires a special [python development environment installation](#1-installation-of-the-python-runtime-environment) too.
 
 ## Description of the Unity environment "Banana"
 > Provided by Udacity. These description is the one given in the project description section.
